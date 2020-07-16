@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json, sys, os.path
 from pathlib import Path
+from local_settings import FILE_PATH
 
 class Write_Files:
     
@@ -25,8 +26,11 @@ class Write_Files:
         
     def write_json_to_file(self):
         #print(json.dumps(self.json_objects))
-        current_working_directory = str(Path.cwd())
-        json_data_directory = (current_working_directory + "\json_data\\")
+        if FILE_PATH:
+            json_data_directory = FILE_PATH
+        else:
+            current_working_directory = str(Path.cwd())
+            json_data_directory = (current_working_directory + "\json_data\\")
         Path(json_data_directory).mkdir(parents=True, exist_ok=True)
         print(json_data_directory)
 
