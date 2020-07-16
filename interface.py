@@ -1,6 +1,7 @@
 # -- coding: utf-8 --
 import sys
 from local_settings import SQLALCHEMY_DATABASE_URI
+from local_settings import DATABASE_IGNORE_LIST
 #from datatransform import Data_Transform
 #from preprocessor import Preprocessor
 from writefiles import Write_Files
@@ -25,12 +26,24 @@ class Interface:
             base.prepare(engine, reflect=True) #SHOW CREATE TABLE...
             session = Session(engine)
             sqlalchemy_class_list = [a for a in dir(base.classes) if not a.startswith('__')]
+            if DATABASE_IGNORE_LIST:
+                sqlalchemy_class_list = self.remove_ignored_database_tables(sqlalchemy_class_list)
+            
             return engine, base, session, sqlalchemy_class_list
         
         except:
             print("[ERROR]: Unable to establish connection to database")
             print("[UNEXPECTED ERROR:]", sys.exc_info())
             sys.exit()
+           
+            
+    def remove_ignored_database_tables(self, sqlalchemy_class_list):
+        for class_obj in DATABASE_IGNORE_LIST:
+                if class_obj in sqlalchemy_class_list:
+                    print("removing database field '{}' from this database extract".format(class_obj))
+                    sqlalchemy_class_list.remove(class_obj)
+        print("\n")
+        return sqlalchemy_class_list
 
 # DEBUGGING / INFO ------------------------------------------------------------
 
