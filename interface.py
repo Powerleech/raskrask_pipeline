@@ -96,7 +96,7 @@ class Interface:
 
 if __name__ == "__main__":
     interface = Interface()
-    interface.database_metadata()
+    #interface.database_metadata()
     query_obj_list = []
     #query_obj_list = interface.full_database_extract(query_obj_list)
     query_obj_list = interface.database_extract_limited(query_obj_list)

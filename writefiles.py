@@ -31,14 +31,22 @@ class Write_Files:
         else:
             current_working_directory = str(Path.cwd())
             json_data_directory = (current_working_directory + "\json_data\\")
-        Path(json_data_directory).mkdir(parents=True, exist_ok=True)
-        print(json_data_directory)
+            
+        try:
+            Path(json_data_directory).mkdir(parents=True, exist_ok=True)
+            #print(json_data_directory)
 
-        interator_counter = 0
-        for json_obj in self.json_objects:
-            file_to_open = (json_data_directory + self.sqlalchemy_class_list[interator_counter] + ".json")
-            f = open(file_to_open, "w")
-            f.write(json.dumps(json_obj))
-            f.close()
-            interator_counter += 1
-        return
+            interator_counter = 0
+            print("Writing files to path: {} | {} files to be written".format(json_data_directory, len(self.json_objects)))
+            for json_obj in self.json_objects:
+                file_to_open = (json_data_directory + self.sqlalchemy_class_list[interator_counter] + ".json")
+                f = open(file_to_open, "w")
+                f.write(json.dumps(json_obj))
+                f.close()
+                interator_counter += 1
+            print("Successfully wrote all files")
+            return
+        except:
+            print("[ERROR]: Unable to write files to path: {}".format(json_data_directory))
+            print("[UNEXPECTED ERROR:]", sys.exc_info())
+            sys.exit()
