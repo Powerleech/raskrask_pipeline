@@ -1,5 +1,5 @@
-This project requires a 'local_settings.py' to be created manually for this projects.
-Example local_settings.py is in the bottom of this readme
+This project requires a 'local_settings.py' to be created manually for this project.
+Example local_settings.py is in the bottom of this readme.
 
 
 
