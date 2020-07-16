@@ -22,7 +22,7 @@ class Write_Files:
                 json_obj.append(data_dict)
             json_objects.append(json_obj)
         return json_objects
-        
+
         
     def write_json_to_file(self):
         #print(json.dumps(self.json_objects))
