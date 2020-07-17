@@ -30,7 +30,7 @@ class Write_Files:
             json_data_directory = FILE_PATH
         else:
             current_working_directory = str(Path.cwd())
-            json_data_directory = (current_working_directory + "\json_data\\")
+            json_data_directory = (current_working_directory + "/json_data/")
             
         try:
             Path(json_data_directory).mkdir(parents=True, exist_ok=True)
