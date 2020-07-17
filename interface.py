@@ -2,12 +2,11 @@
 import sys
 from local_settings import SQLALCHEMY_DATABASE_URI
 from local_settings import DATABASE_IGNORE_LIST
-#from datatransform import Data_Transform
-#from preprocessor import Preprocessor
+from local_settings import TESTRUN_OR_LIVERUN
+from local_settings import METADATA_ON
 from writefiles import Write_Files
 
 import sqlalchemy
-#from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 
@@ -20,10 +19,12 @@ class Interface:
 
     def establish_database_connection(self):
         try:
-            #engine = sqlalchemy.create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
+            if not SQLALCHEMY_DATABASE_URI:
+                print("[ERROR]: 'SQLALCHEMY_DATABASE_URI' can not be left empty")
+                sys.exit()
             engine = sqlalchemy.create_engine(SQLALCHEMY_DATABASE_URI)
             base = automap_base()
-            base.prepare(engine, reflect=True) #SHOW CREATE TABLE...
+            base.prepare(engine, reflect=True)
             session = Session(engine)
             sqlalchemy_class_list = [a for a in dir(base.classes) if not a.startswith('__')]
             if DATABASE_IGNORE_LIST:
@@ -92,15 +93,27 @@ class Interface:
 
     def get_sqlalchemy_class_list(self):
         return self.sqlalchemy_class_list
+    
+    def get_database_extract_limiter(self):
+        return self.database_extract_limiter
 
 
 if __name__ == "__main__":
     interface = Interface()
-    #interface.database_metadata()
+    if METADATA_ON:
+        interface.database_metadata()
+        
     query_obj_list = []
-    #query_obj_list = interface.full_database_extract(query_obj_list)
-    query_obj_list = interface.database_extract_limited(query_obj_list)
+    if TESTRUN_OR_LIVERUN == "test":
+        print("This is a test run, so only writing {} rows from the database".format(interface.get_database_extract_limiter()))
+        query_obj_list = interface.database_extract_limited(query_obj_list)
+    elif TESTRUN_OR_LIVERUN == "live":
+        print("This is a live run, so all rows will be written to file")
+        query_obj_list = interface.full_database_extract(query_obj_list)
+    else:
+        print("[ERROR]: invalid value set in 'TESTRUN_OR_LIVERUN', value is: {}, value can be 'test' or 'live'".format(TESTRUN_OR_LIVERUN))
+        sys.exit()
+
     sqlalchemy_class_list = interface.get_sqlalchemy_class_list()
-    
     file_writer = Write_Files(sqlalchemy_class_list, query_obj_list)
-    file_writer.write_json_to_file()
+    file_writer.write_files()
